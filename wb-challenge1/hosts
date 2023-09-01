@@ -1,0 +1,2 @@
+[host1]
+127.0.0.1 ansible_ssh_port=2222 ansible_ssh_user=client ansible_ssh_password=client ansible_sudo_pass=client

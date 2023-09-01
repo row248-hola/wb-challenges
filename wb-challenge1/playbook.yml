@@ -1,0 +1,21 @@
+---
+- name: Run Security Checks role
+  hosts: localhost
+  roles:
+    - security-checks
+  post_tasks:
+    - name: Generate report
+      delegate_to: 127.0.0.1
+      connection: local
+      ansible.builtin.copy: 
+        content: |
+          {% for h in ansible_play_hosts_all | sort %}
+          Host {{ h }}:
+          {{ hostvars[h]['file_permissions']['stdout']|trim|default('File permissions is ok', true) }}
+          {{ hostvars[h]['suid_bits']['stdout']|trim|default('SUID bits is ok', true) }}
+          {{ hostvars[h]['capabilities']['stdout']|trim|default('No risky capabilities', true) }}
+          {{ hostvars[h]['CVEs']['stdout']|trim|default('No CVEs found', true) }}
+          {{ hostvars[h]['sshd_config']['stdout']|trim|default('No sshd dangerous settings found', true) }}
+
+          {% endfor %}
+        dest: report.txt

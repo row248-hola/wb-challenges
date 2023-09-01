@@ -1,0 +1,35 @@
+---
+- name: Install required packages
+  become: true
+  ansible.builtin.package:
+    name:
+      - libcap2-bin
+      - build-essential
+    state: latest
+
+- name: Check risky file permissions
+  become: true
+  ansible.builtin.script:
+    cmd: check-file-permissions.sh
+  register: file_permissions
+
+- name: Check risky SUID bits
+  become: true
+  ansible.builtin.script:
+    cmd: check-suid-bit.sh
+  register: suid_bits
+
+- name: Check risky SUID bits
+  ansible.builtin.script:
+    cmd: check-capabilities.sh
+  register: capabilities
+
+- name: Check for CVEs
+  ansible.builtin.script:
+    cmd: check-CVEs.sh
+  register: CVEs
+
+- name: Check risky sshd_config settings
+  ansible.builtin.script:
+    cmd: check-sshd-config.sh
+  register: sshd_config
